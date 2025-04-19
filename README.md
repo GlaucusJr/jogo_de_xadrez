@@ -47,9 +47,13 @@ Projeto Finalizado                                                 ⏳
 Estruturacao das pastas do jogo de xadrez
 
 jogo_de_xadrez
+
 │
+
 ├── public                     # Arquivos visíveis diretamente pelo navegador
+
 │   └── index.html             # Página principal
+
 │
 ├── src                        # Código-fonte
 │   ├── styles                 # Estilos
