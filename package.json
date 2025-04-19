@@ -4,7 +4,9 @@
   "description": "Meu primeiro projeto do zero.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && cp -r dist/* public/ && cp src/styles/style.css public/",
+    "start": "live-server public"
   },
   "repository": {
     "type": "git",
@@ -19,5 +21,6 @@
   "keywords": [],
   "devDependencies": {
     "typescript": "^5.8.3"
-  }
+  } 
+
 }

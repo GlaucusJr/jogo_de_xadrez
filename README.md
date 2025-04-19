@@ -9,13 +9,20 @@ Passo a passo da criação do jogo de xadrez
 5-Configurar o tsconfig.json                                       ✔️
 6-Iniciar o Html                                                   ✔️
 7-Inicir o CSS                                                     ✔️
-8-
+8-Regras do Jogo                                                   ✔️
+9-Adicionar uma primeira peça pra ver como tudo ta rodando         ✔️
+10-Adicionar as outras peças além dos peões (torre, bispo, etc)
+11-Implementar movimentação das peças
+12-Validar regras de movimento (ex: bispo só anda na diagonal)
+13-Alternar entre turnos (branco vs preto)
+14-Armazenar o estado do jogo (pra resetar ou salvar)
+15-Estilizar o tabuleiro (CSS bonito, responsivo etc.)
 .
 .
 .
 Projeto Finalizado                                                 ⏳
 
-////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////// 
 
 Estruturacao das pastas do jogo de xadrez
 
