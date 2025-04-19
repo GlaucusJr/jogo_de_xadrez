@@ -49,3 +49,6 @@ jogo_de_xadrez
 
 Regras do jogo de xadrez
 
+Project -> [text](Documents/Xadrez_lei_da_FIDE.pdf)
+Site -> https://www.cbx.org.br/files/downloads/Xadrez_lei_da_FIDE.pdf
+
