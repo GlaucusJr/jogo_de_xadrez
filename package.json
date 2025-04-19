@@ -1,0 +1,23 @@
+{
+  "name": "jogo_de_xadrez",
+  "version": "1.0.0",
+  "description": "Meu primeiro projeto do zero.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GlaucusJr/jogo_de_xadrez.git"
+  },
+  "author": "Glaucus W. T. M. Junior",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GlaucusJr/jogo_de_xadrez/issues"
+  },
+  "homepage": "https://github.com/GlaucusJr/jogo_de_xadrez#readme",
+  "keywords": [],
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
