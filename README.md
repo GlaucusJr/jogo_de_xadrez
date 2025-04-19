@@ -48,11 +48,16 @@ Estruturacao das pastas do jogo de xadrez
 
 jogo_de_xadrez
 
-public (# Arquivos visíveis diretamente pelo navegador) /  index.html ( # Página principal)  
+public (# Arquivos visíveis diretamente pelo navegador) 
 
-src (# Código-fonte) / styles (# Estilos) / style.css
+---/  index.html ( # Página principal)  
 
-src (# Código-fonte) / models (# Regras e lógica de peças) / Board.ts (# Representação do tabuleiro)
+
+src (# Código-fonte) 
+
+---/ styles (# Estilos) / style.css
+
+---/ models (# Regras e lógica de peças) / Board.ts (# Representação do tabuleiro)
                                                              Piece.ts (# Classe base para peças)
                                                              Pawn.ts (# Peões)
                                                              Rook.ts (# Torres)
@@ -61,9 +66,10 @@ src (# Código-fonte) / models (# Regras e lógica de peças) / Board.ts (# Repr
                                                              Queen.ts (# Rainha)
                                                              King.ts (# Rei)
                                                              
-src (# Código-fonte) / utils (# Funções auxiliares) / helpers.ts
+---/ utils (# Funções auxiliares) / helpers.ts
 
-src (# Código-fonte) / main.ts (# Arquivo principal que inicializa o jogo)
+---/ main.ts (# Arquivo principal que inicializa o jogo)
+
                      
 dist (# Arquivos compilados de JS)                      
 
