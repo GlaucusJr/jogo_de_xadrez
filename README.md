@@ -1,6 +1,6 @@
 # jogo_de_xadrez
 
-Passo a passo da criacao do jogo
+Passo a passo da criação do jogo de xadrez
 
 1-Estruturar as pastas mais ou menos como imagino que vou precisar ✔️
 2-Inicializar o projeto -> "npm init/ npm init -y"                 ✔️
