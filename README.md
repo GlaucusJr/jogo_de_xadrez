@@ -3,7 +3,9 @@
 Passo a passo da criação do jogo de xadrez
 
 1-Estruturar as pastas mais ou menos como imagino que vou precisar ✔️
+
 2-Inicializar o projeto -> "npm init/ npm init -y"                 ✔️
+
 3-Instalar o TS -> npm install typescript --save-dev               ✔️
 4-Iniciar o projeto com TS -> npx tsc --init                       ✔️
 5-Configurar o tsconfig.json                                       ✔️
