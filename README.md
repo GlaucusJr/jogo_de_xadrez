@@ -48,34 +48,25 @@ Estruturacao das pastas do jogo de xadrez
 
 jogo_de_xadrez
 
-│
+public (# Arquivos visíveis diretamente pelo navegador) /  index.html ( # Página principal)               
+src (# Código-fonte) / styles (# Estilos) / style.css               
+                     / models (# Regras e lógica de peças) / Board.ts (# Representação do tabuleiro)
+                                                             Piece.ts (# Classe base para peças)
+                                                             Pawn.ts (# Peões)
+                                                             Rook.ts (# Torres)
+                                                             Knight.ts (# Cavalos)
+                                                             Bishop.ts (# Bispos)
+                                                             Queen.ts (# Rainha)
+                                                             King.ts (# Rei)
+                     / utils (# Funções auxiliares) / helpers.ts
+                     / main.ts (# Arquivo principal que inicializa o jogo)  
+                     
 
-├── public                     # Arquivos visíveis diretamente pelo navegador
+dist (# Arquivos compilados de JS)                      
 
-│   └── index.html             # Página principal
-
-│
-├── src                        # Código-fonte
-│   ├── styles                 # Estilos
-│   │   └── style.css
-│   ├── models                 # Regras e lógica de peças
-│   │   ├── Board.ts           # Representação do tabuleiro
-│   │   ├── Piece.ts           # Classe base para peças
-│   │   ├── Pawn.ts            # Peões
-│   │   ├── Rook.ts            # Torres
-│   │   ├── Knight.ts          # Cavalos
-│   │   ├── Bishop.ts          # Bispos
-│   │   ├── Queen.ts           # Rainha
-│   │   └── King.ts            # Rei
-│   ├── utils                  # Funções auxiliares
-│   │   └── helpers.ts
-│   └── main.ts                # Arquivo principal que inicializa o jogo
-│
-├── dist                       # Arquivos compilados de JS
-│
-├── tsconfig.json              # Configuração do TypeScript - Criado no passo 4
-├── package.json               # Dependências e scripts - Criado no passo 2
-└── README.md                  # Sobre o projeto
+tsconfig.json              # Configuração do TypeScript - Criado no passo 4
+package.json               # Dependências e scripts - Criado no passo 2
+README.md                  # Sobre o projeto
 
 
 Regras do jogo de xadrez
