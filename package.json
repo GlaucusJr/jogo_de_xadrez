@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && cp -r dist/* public/ && cp src/styles/style.css public/",
+    "build":"tsc && if not exist public\\dist mkdir public\\dist && if not exist public\\styles mkdir public\\styles && xcopy /E /Y dist public\\dist && copy src\\styles\\style.css public\\styles\\style.css",
     "start": "live-server public"
   },
   "repository": {
@@ -20,7 +20,7 @@
   "homepage": "https://github.com/GlaucusJr/jogo_de_xadrez#readme",
   "keywords": [],
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "typescript": "^5.8.3"
-  } 
-
+  }
 }
