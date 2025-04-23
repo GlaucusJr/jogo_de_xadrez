@@ -8,6 +8,7 @@ import { Color } from "./Piece.js";
 
 export class Board {
   board: (Piece | null)[][] = [];
+  selectedPiece: Piece | null = null;
 
   constructor() {
     this.createEmptyBoard();
@@ -86,8 +87,35 @@ export class Board {
           square.textContent = piece.symbol;
         }
 
+        square.addEventListener("click", () => {
+          const row = parseInt(square.dataset.row!);
+          const col = parseInt(square.dataset.col!);
+          this.handleSquareClick(row, col);
+        }); 
+
         container.appendChild(square);
+
       }
+    } 
+  }
+
+  handleSquareClick(row: number, col: number) {
+    const clickedPiece = this.board[row][col];
+  
+    if (this.selectedPiece) {
+      // Tentar mover a peça selecionada
+      if (this.selectedPiece.isValidMove(row, col, this.board)) {
+        // Atualiza o tabuleiro
+        this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
+        this.board[row][col] = this.selectedPiece;
+        this.selectedPiece.move(row, col);
+      }
+  
+      this.selectedPiece = null; // Deselect após tentativa
+      this.render(document.getElementById("board")!);
+    } else if (clickedPiece) {
+      // Selecionar uma peça
+      this.selectedPiece = clickedPiece;
     }
   }
 }
