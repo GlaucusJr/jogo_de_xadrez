@@ -17,8 +17,6 @@ Site -> https://www.cbx.org.br/files/downloads/Xadrez_lei_da_FIDE.pdf
 
 ## 🚀 Como rodar o projeto
 
-1. Clone o repositório:
-
 ```bash
 git clone https://github.com/seu-usuario/jogo-de-xadrez.git
 cd jogo-de-xadrez
