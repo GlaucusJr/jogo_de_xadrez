@@ -85,6 +85,10 @@ export class Board {
         const piece = this.board[row][col];
         if (piece) {
           square.textContent = piece.symbol;
+        
+          if (this.selectedPiece === piece) {
+            square.classList.add("selected");
+          }
         }
 
         square.addEventListener("click", () => {
@@ -103,19 +107,17 @@ export class Board {
     const clickedPiece = this.board[row][col];
   
     if (this.selectedPiece) {
-      // Tentar mover a peça selecionada
       if (this.selectedPiece.isValidMove(row, col, this.board)) {
-        // Atualiza o tabuleiro
         this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
         this.board[row][col] = this.selectedPiece;
         this.selectedPiece.move(row, col);
       }
   
-      this.selectedPiece = null; // Deselect após tentativa
+      this.selectedPiece = null; 
       this.render(document.getElementById("board")!);
     } else if (clickedPiece) {
-      // Selecionar uma peça
       this.selectedPiece = clickedPiece;
+      this.render(document.getElementById("board")!);
     }
   }
 }
