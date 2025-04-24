@@ -11,9 +11,7 @@ Um projeto de jogo de xadrez clássico feito com TypeScript, HTML e CSS. Esta ap
 
 ## 🧾 Regras do jogo de xadrez
 
-Project -> [text](Documents/Xadrez_lei_da_FIDE.pdf)
-Site -> https://www.cbx.org.br/files/downloads/Xadrez_lei_da_FIDE.pdf
-
+Documento -> [Regras](Documents/Xadrez_lei_da_FIDE.pdf)
 
 ## 🚀 Como rodar o projeto
 
