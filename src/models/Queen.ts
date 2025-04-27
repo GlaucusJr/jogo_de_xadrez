@@ -1,29 +1,52 @@
-import { Piece, Color } from "./Piece.js";
+import { Piece } from "./Piece.js";
 
 export class Queen extends Piece {
-  constructor(color: Color, row: number, col: number) {
+  constructor(color: "white" | "black", row: number, col: number) {
     super(color, row, col, color === "white" ? "♕" : "♛");
   }
 
   isValidMove(toRow: number, toCol: number, board: (Piece | null)[][]): boolean {
-    const isStraight = toRow === this.row || toCol === this.col;
-    const isDiagonal = Math.abs(toRow - this.row) === Math.abs(toCol - this.col);
+    const rowDiff = toRow - this.row;
+    const colDiff = toCol - this.col;
 
-    if (!isStraight && !isDiagonal) return false;
+    if (rowDiff === 0 || colDiff === 0) {
+      const rowStep = rowDiff === 0 ? 0 : rowDiff > 0 ? 1 : -1;
+      const colStep = colDiff === 0 ? 0 : colDiff > 0 ? 1 : -1;
 
-    const stepRow = toRow === this.row ? 0 : (toRow > this.row ? 1 : -1);
-    const stepCol = toCol === this.col ? 0 : (toCol > this.col ? 1 : -1);
+      let currentRow = this.row + rowStep;
+      let currentCol = this.col + colStep;
 
-    let r = this.row + stepRow;
-    let c = this.col + stepCol;
+      while (currentRow !== toRow || currentCol !== toCol) {
+        if (board[currentRow][currentCol] !== null) {
+          return false;
+        }
+        currentRow += rowStep;
+        currentCol += colStep;
+      }
 
-    while (r !== toRow || c !== toCol) {
-      if (board[r][c] !== null) return false;
-      r += stepRow;
-      c += stepCol;
+      const destination = board[toRow][toCol];
+      return destination === null || destination.color !== this.color;
     }
 
-    const target = board[toRow][toCol];
-    return target === null || target.color !== this.color;
+    if (Math.abs(rowDiff) === Math.abs(colDiff)) {
+      const rowStep = rowDiff > 0 ? 1 : -1;
+      const colStep = colDiff > 0 ? 1 : -1;
+
+      let currentRow = this.row + rowStep;
+      let currentCol = this.col + colStep;
+
+      while (currentRow !== toRow && currentCol !== toCol) {
+        if (board[currentRow][currentCol] !== null) {
+          return false;
+        }
+        currentRow += rowStep;
+        currentCol += colStep;
+      }
+
+      const destination = board[toRow][toCol];
+      return destination === null || destination.color !== this.color;
+    }
+
+    return false;
   }
 }
