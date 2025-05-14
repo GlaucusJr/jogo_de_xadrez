@@ -10,7 +10,7 @@ import { Color } from "./Piece.js";
 export class Board {
   board: (Piece | null)[][] = [];
   selectedPiece: Piece | null = null;
-  currentTurn: "white" | "black" = "white";
+  currentTurn: Color = "white";
 
   constructor() {
     this.createEmptyBoard();
@@ -22,24 +22,26 @@ export class Board {
   }
 
   addPieces() {
+    // Brancas
     this.board[7][0] = new Rook("white", 7, 0);
     this.board[7][1] = new Knight("white", 7, 1);
-    this.board[7][2] = new Bishop("white", 7, 2);
+    this.board[7][2] = new Bishop("white", 7, 2, "♗");
     this.board[7][3] = new Queen("white", 7, 3);
     this.board[7][4] = new King("white", 7, 4);
-    this.board[7][5] = new Bishop("white", 7, 5);
+    this.board[7][5] = new Bishop("white", 7, 5, "♗");
     this.board[7][6] = new Knight("white", 7, 6);
     this.board[7][7] = new Rook("white", 7, 7);
     for (let col = 0; col < 8; col++) {
       this.board[6][col] = new Pawn("white", 6, col);
     }
 
+    // Pretas
     this.board[0][0] = new Rook("black", 0, 0);
     this.board[0][1] = new Knight("black", 0, 1);
-    this.board[0][2] = new Bishop("black", 0, 2);
+    this.board[0][2] = new Bishop("black", 0, 2, "♝");
     this.board[0][3] = new Queen("black", 0, 3);
     this.board[0][4] = new King("black", 0, 4);
-    this.board[0][5] = new Bishop("black", 0, 5);
+    this.board[0][5] = new Bishop("black", 0, 5, "♝");
     this.board[0][6] = new Knight("black", 0, 6);
     this.board[0][7] = new Rook("black", 0, 7);
     for (let col = 0; col < 8; col++) {
@@ -66,8 +68,12 @@ export class Board {
             square.classList.add("selected");
           }
 
-          if (this.selectedPiece.isValidMove(row, col, this.board)) {
-            square.classList.add("highlight");
+          try {
+            if (this.selectedPiece.isValidMove(row, col, this.board)) {
+              square.classList.add("highlight");
+            }
+          } catch (e) {
+            console.error("Erro ao verificar movimento:", e);
           }
         }
 
@@ -87,23 +93,119 @@ export class Board {
 
     if (this.selectedPiece) {
       if (this.selectedPiece.isValidMove(row, col, this.board)) {
-        if (clickedPiece && clickedPiece.color !== this.selectedPiece.color) {
-          this.board[row][col] = null;
+        const target = this.board[row][col];
+        if (!target || target.color !== this.selectedPiece.color) {
+          this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
+          this.board[row][col] = this.selectedPiece;
+          this.selectedPiece.move(row, col);
+
+          // Trocar turno
+          this.currentTurn = this.currentTurn === "white" ? "black" : "white";
+
+          // Verificar xeque e xeque-mate
+          if (this.isInCheck(this.currentTurn)) {
+            if (this.isCheckmate(this.currentTurn)) {
+              alert(`Xeque-mate! ${this.currentTurn === "white" ? "Pretas" : "Brancas"} venceram!`);
+            } else {
+              alert("Xeque!");
+            }
+          }
         }
 
-        this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
-        this.board[row][col] = this.selectedPiece;
-        this.selectedPiece.move(row, col);
-
         this.selectedPiece = null;
+        this.render(document.getElementById("board")!);
       } else {
         this.selectedPiece = null;
+        this.render(document.getElementById("board")!);
       }
-
-      this.render(document.getElementById("board")!);
-    } else if (clickedPiece) {
+    } else if (clickedPiece && clickedPiece.color === this.currentTurn) {
       this.selectedPiece = clickedPiece;
       this.render(document.getElementById("board")!);
     }
+  }
+
+  isInCheck(color: Color): boolean {
+    const king = this.findKing(color);
+    if (!king) return false;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece && piece.color !== color) {
+          if (piece.isValidMove(king.row, king.col, this.board)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  isCheckmate(color: Color): boolean {
+    if (!this.isInCheck(color)) return false;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece && piece.color === color) {
+          for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+              if (piece.isValidMove(r, c, this.board)) {
+                const simulatedBoard = this.cloneBoard();
+                const simulatedPiece = simulatedBoard[row][col];
+
+                simulatedBoard[r][c] = simulatedPiece;
+                simulatedBoard[row][col] = null;
+                simulatedPiece.move(r, c);
+
+                if (!this.simulateCheck(simulatedBoard, color)) {
+                  return false;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  cloneBoard(): (Piece | null)[][] {
+    return this.board.map(row => row.map(piece => piece ? piece.clone() : null));
+  }
+
+  simulateCheck(simulatedBoard: (Piece | null)[][], color: Color): boolean {
+    const king = simulatedBoard.flat().find(
+      piece => piece instanceof King && piece.color === color
+    ) as King | undefined;
+
+    if (!king) return true;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = simulatedBoard[row][col];
+        if (piece && piece.color !== color) {
+          if (piece.isValidMove(king.row, king.col, simulatedBoard)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  findKing(color: Color): King | null {
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = this.board[row][col];
+        if (piece instanceof King && piece.color === color) {
+          return piece;
+        }
+      }
+    }
+    return null;
   }
 }
