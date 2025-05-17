@@ -5,6 +5,10 @@ export class Rook extends Piece {
     super(color, row, col, color === "white" ? "♖" : "♜");
   }
 
+  clone(): Rook {
+    return new Rook(this.color, this.row, this.col);
+  }
+  
   isValidMove(toRow: number, toCol: number, board: (Piece | null)[][]): boolean {
     if (this.row !== toRow && this.col !== toCol) {
       return false;
@@ -27,4 +31,5 @@ export class Rook extends Piece {
     const destination = board[toRow][toCol];
     return destination === null || destination.color !== this.color;
   }
+
 }

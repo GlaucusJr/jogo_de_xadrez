@@ -14,4 +14,7 @@ export abstract class Piece {
     this.row = toRow;
     this.col = toCol;
   }
+
+  abstract clone(): Piece;
+
 }

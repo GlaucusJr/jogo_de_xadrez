@@ -25,10 +25,10 @@ export class Board {
     // Brancas
     this.board[7][0] = new Rook("white", 7, 0);
     this.board[7][1] = new Knight("white", 7, 1);
-    this.board[7][2] = new Bishop("white", 7, 2, "♗");
+    this.board[7][2] = new Bishop("white", 7, 2);
     this.board[7][3] = new Queen("white", 7, 3);
     this.board[7][4] = new King("white", 7, 4);
-    this.board[7][5] = new Bishop("white", 7, 5, "♗");
+    this.board[7][5] = new Bishop("white", 7, 5);
     this.board[7][6] = new Knight("white", 7, 6);
     this.board[7][7] = new Rook("white", 7, 7);
     for (let col = 0; col < 8; col++) {
@@ -38,10 +38,10 @@ export class Board {
     // Pretas
     this.board[0][0] = new Rook("black", 0, 0);
     this.board[0][1] = new Knight("black", 0, 1);
-    this.board[0][2] = new Bishop("black", 0, 2, "♝");
+    this.board[0][2] = new Bishop("black", 0, 2);
     this.board[0][3] = new Queen("black", 0, 3);
     this.board[0][4] = new King("black", 0, 4);
-    this.board[0][5] = new Bishop("black", 0, 5, "♝");
+    this.board[0][5] = new Bishop("black", 0, 5);
     this.board[0][6] = new Knight("black", 0, 6);
     this.board[0][7] = new Rook("black", 0, 7);
     for (let col = 0; col < 8; col++) {
@@ -155,12 +155,16 @@ export class Board {
                 const simulatedBoard = this.cloneBoard();
                 const simulatedPiece = simulatedBoard[row][col];
 
+                if (!simulatedPiece) continue; // Proteção contra null
+
+                // Simula o movimento
                 simulatedBoard[r][c] = simulatedPiece;
                 simulatedBoard[row][col] = null;
                 simulatedPiece.move(r, c);
 
+                // Verifica se ainda está em xeque
                 if (!this.simulateCheck(simulatedBoard, color)) {
-                  return false;
+                  return false; // Existe uma jogada para sair do xeque
                 }
               }
             }
@@ -169,8 +173,8 @@ export class Board {
       }
     }
 
-    return true;
-  }
+  return true; // Nenhuma jogada válida encontrada => xeque-mate
+}
 
   cloneBoard(): (Piece | null)[][] {
     return this.board.map(row => row.map(piece => piece ? piece.clone() : null));

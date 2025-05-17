@@ -5,6 +5,10 @@ export class King extends Piece {
     super(color, row, col, color === "white" ? "♔" : "♚");
   }
 
+  clone(): King {
+    return new King(this.color, this.row, this.col);
+  }
+
   isValidMove(toRow: number, toCol: number, board: (Piece | null)[][]): boolean {
     const rowDiff = Math.abs(toRow - this.row);
     const colDiff = Math.abs(toCol - this.col);

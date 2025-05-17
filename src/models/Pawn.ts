@@ -5,6 +5,10 @@ export class Pawn extends Piece {
     super(color, row, col, color === "white" ? "♙" : "♟");
   }
 
+  clone(): Pawn {
+    return new Pawn(this.color, this.row, this.col);
+  }
+
   isValidMove(toRow: number, toCol: number, board: (Piece | null)[][]): boolean {
     const dir = this.color === "white" ? -1 : 1;
     const startRow = this.color === "white" ? 6 : 1;
@@ -27,6 +31,5 @@ export class Pawn extends Piece {
     }
   
     return false;
-  }
-  
+  }  
 }

@@ -5,6 +5,10 @@ export class Queen extends Piece {
     super(color, row, col, color === "white" ? "♕" : "♛");
   }
 
+  clone(): Queen {
+    return new Queen(this.color, this.row, this.col);
+  }
+
   isValidMove(toRow: number, toCol: number, board: (Piece | null)[][]): boolean {
     const rowDiff = toRow - this.row;
     const colDiff = toCol - this.col;
