@@ -88,60 +88,58 @@ export class Board {
     }
   }
 
+
 handleSquareClick(row: number, col: number) {
   const clickedPiece = this.board[row][col];
 
   if (this.selectedPiece) {
+    const originalRow = this.selectedPiece.row;
+    const originalCol = this.selectedPiece.col;
+
     if (this.selectedPiece.isValidMove(row, col, this.board)) {
       const target = this.board[row][col];
-      if (!target || target.color !== this.selectedPiece.color) {
-        // Simula o movimento para verificar se deixaria o rei em xeque
-        const simulatedBoard = this.cloneBoard();
-        const simulatedPiece = simulatedBoard[this.selectedPiece.row][this.selectedPiece.col];
 
-        if (simulatedPiece) {
-          simulatedBoard[row][col] = simulatedPiece;
-          simulatedBoard[this.selectedPiece.row][this.selectedPiece.col] = null;
-          simulatedPiece.move(row, col);
+      // Lógica de roque (pequeno e grande)
+      if (
+        this.selectedPiece instanceof King &&
+        Math.abs(col - originalCol) === 2 &&
+        row === originalRow
+      ) {
+        const rookCol = col > originalCol ? 7 : 0;
+        const newRookCol = col > originalCol ? col - 1 : col + 1;
+        const rook = this.board[row][rookCol];
 
-          if (this.simulateCheck(simulatedBoard, this.selectedPiece.color)) {
-            alert("Jogada inválida: você ficaria em xeque!");
-            this.selectedPiece = null;
-            this.render(document.getElementById("board")!);
-            return;
-          }
+        if (rook instanceof Rook && !rook.hasMoved) {
+          // Move a torre
+          this.board[row][rookCol] = null;
+          this.board[row][newRookCol] = rook;
+          rook.move(row, newRookCol);
         }
-
-        // Executa o movimento real
-        this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
-        this.board[row][col] = this.selectedPiece;
-        this.selectedPiece.move(row, col);
-
-        // Verifica se o adversário está em xeque ou xeque-mate
-        const nextTurn = this.currentTurn === "white" ? "black" : "white";
-        if (this.isInCheck(nextTurn)) {
-          if (this.isCheckmate(nextTurn)) {
-            const vencedor = this.currentTurn === "white" ? "Brancas" : "Pretas";
-            const jogarNovamente = confirm(`Xeque-mate! ${vencedor} venceram!\nDeseja jogar novamente?`);
-            if (jogarNovamente) {
-              // Reinicia o jogo
-              const novoTabuleiro = new Board();
-              novoTabuleiro.render(document.getElementById("board")!);
-              // Substitui o tabuleiro atual pelo novo
-              Object.assign(this, novoTabuleiro);
-              return;
-            } else {
-              alert("Obrigado por jogar!");
-              return;
-            }
-          } else {
-            alert("Xeque!");
-          }
-        }
-
-        this.currentTurn = nextTurn;
       }
 
+      // Executar o movimento normal
+      this.board[originalRow][originalCol] = null;
+      this.board[row][col] = this.selectedPiece;
+      this.selectedPiece.move(row, col);
+
+      const nextTurn = this.currentTurn === "white" ? "black" : "white";
+
+      if (this.isInCheck(nextTurn)) {
+        if (this.isCheckmate(nextTurn)) {
+          setTimeout(() => {
+            alert(`Xeque-mate! ${this.currentTurn === "white" ? "Brancas" : "Pretas"} venceram!`);
+            if (confirm("Deseja jogar novamente?")) {
+              location.reload();
+            }
+          }, 50);
+        } else {
+          setTimeout(() => {
+            alert("Xeque!");
+          }, 10);
+        }
+      }
+
+      this.currentTurn = nextTurn;
       this.selectedPiece = null;
       this.render(document.getElementById("board")!);
     } else {
@@ -153,7 +151,6 @@ handleSquareClick(row: number, col: number) {
     this.render(document.getElementById("board")!);
   }
 }
-
 
     isInCheck(color: Color): boolean {
     const king = this.findKing(color);

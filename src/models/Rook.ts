@@ -1,8 +1,14 @@
 import { Piece } from "./Piece.js";
 
 export class Rook extends Piece {
+  hasMoved: boolean = false;
   constructor(color: "white" | "black", row: number, col: number) {
     super(color, row, col, color === "white" ? "♖" : "♜");
+  }
+
+  move(row: number, col: number) {
+    super.move(row, col);
+    this.hasMoved = true;
   }
 
   clone(): Rook {
