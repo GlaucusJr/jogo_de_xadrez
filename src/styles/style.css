@@ -30,7 +30,8 @@
   }
   
   .square.highlight {
-    background-color: rgba(0, 255, 0, 0.5);
+    background-color: rgba(0, 255, 0, 0.322);
+    opacity: 0.7;
     outline: 2px solid #333 2px solid;
   }
   

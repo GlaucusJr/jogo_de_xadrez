@@ -88,7 +88,6 @@ export class Board {
     }
   }
 
-
 handleSquareClick(row: number, col: number) {
   const clickedPiece = this.board[row][col];
 
@@ -97,9 +96,7 @@ handleSquareClick(row: number, col: number) {
     const originalCol = this.selectedPiece.col;
 
     if (this.selectedPiece.isValidMove(row, col, this.board)) {
-      const target = this.board[row][col];
-
-      // Lógica de roque (pequeno e grande)
+      // Verifica se é um movimento de roque
       if (
         this.selectedPiece instanceof King &&
         Math.abs(col - originalCol) === 2 &&
@@ -117,7 +114,7 @@ handleSquareClick(row: number, col: number) {
         }
       }
 
-      // Executar o movimento normal
+      // Executa o movimento da peça selecionada
       this.board[originalRow][originalCol] = null;
       this.board[row][col] = this.selectedPiece;
       this.selectedPiece.move(row, col);

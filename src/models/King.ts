@@ -7,7 +7,7 @@ export class King extends Piece {
   constructor(color: Color, row: number, col: number, symbol: string = color === "white" ? "♔" : "♚") {
     super(color, row, col, symbol);
   }
-
+  
   isValidMove(row: number, col: number, board: (Piece | null)[][]): boolean {
     const rowDiff = Math.abs(this.row - row);
     const colDiff = Math.abs(this.col - col);
@@ -32,11 +32,16 @@ export class King extends Piece {
         if (board[row][c]) return false;
       }
 
-      return true;
-    }
+    // Verifica se o rei está em xeque ou passará por casas sob ataque
+    // Esta verificação depende da implementação do seu método isInCheck
+    // Certifique-se de que ele verifica se o rei está em xeque após cada movimento
 
-    return false;
+    return true;
   }
+
+  return false;
+}
+
 
   move(row: number, col: number): void {
     super.move(row, col);
