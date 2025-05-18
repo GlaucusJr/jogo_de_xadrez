@@ -88,41 +88,60 @@ export class Board {
     }
   }
 
-  handleSquareClick(row: number, col: number) {
-    const clickedPiece = this.board[row][col];
+handleSquareClick(row: number, col: number) {
+  const clickedPiece = this.board[row][col];
 
-    if (this.selectedPiece) {
-      if (this.selectedPiece.isValidMove(row, col, this.board)) {
-        const target = this.board[row][col];
-        if (!target || target.color !== this.selectedPiece.color) {
-          this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
-          this.board[row][col] = this.selectedPiece;
-          this.selectedPiece.move(row, col);
+  if (this.selectedPiece) {
+    if (this.selectedPiece.isValidMove(row, col, this.board)) {
+      const target = this.board[row][col];
+      if (!target || target.color !== this.selectedPiece.color) {
+        // Simula o movimento para verificar se deixaria o rei em xeque
+        const simulatedBoard = this.cloneBoard();
+        const simulatedPiece = simulatedBoard[this.selectedPiece.row][this.selectedPiece.col];
 
-          // Trocar turno
-          this.currentTurn = this.currentTurn === "white" ? "black" : "white";
+        if (simulatedPiece) {
+          simulatedBoard[row][col] = simulatedPiece;
+          simulatedBoard[this.selectedPiece.row][this.selectedPiece.col] = null;
+          simulatedPiece.move(row, col);
 
-          // Verificar xeque e xeque-mate
-          if (this.isInCheck(this.currentTurn)) {
-            if (this.isCheckmate(this.currentTurn)) {
-              alert(`Xeque-mate! ${this.currentTurn === "white" ? "Pretas" : "Brancas"} venceram!`);
-            } else {
-              alert("Xeque!");
-            }
+          if (this.simulateCheck(simulatedBoard, this.selectedPiece.color)) {
+            alert("Jogada inválida: você ficaria em xeque!");
+            this.selectedPiece = null;
+            this.render(document.getElementById("board")!);
+            return;
           }
         }
 
-        this.selectedPiece = null;
-        this.render(document.getElementById("board")!);
-      } else {
-        this.selectedPiece = null;
-        this.render(document.getElementById("board")!);
+        // Executa o movimento real
+        this.board[this.selectedPiece.row][this.selectedPiece.col] = null;
+        this.board[row][col] = this.selectedPiece;
+        this.selectedPiece.move(row, col);
+
+        // Verifica se o adversário está em xeque ou xeque-mate
+        const nextTurn = this.currentTurn === "white" ? "black" : "white";
+        if (this.isInCheck(nextTurn)) {
+          if (this.isCheckmate(nextTurn)) {
+            alert(`Xeque-mate! ${nextTurn === "white" ? "Pretas" : "Brancas"} venceram!`);
+          } else {
+            alert("Xeque!");
+          }
+        }
+
+        this.currentTurn = nextTurn;
       }
-    } else if (clickedPiece && clickedPiece.color === this.currentTurn) {
-      this.selectedPiece = clickedPiece;
+
+      this.selectedPiece = null;
+      this.render(document.getElementById("board")!);
+    } else {
+      this.selectedPiece = null;
       this.render(document.getElementById("board")!);
     }
+  } else if (clickedPiece && clickedPiece.color === this.currentTurn) {
+    this.selectedPiece = clickedPiece;
+    this.render(document.getElementById("board")!);
   }
+}
+
 
   isInCheck(color: Color): boolean {
     const king = this.findKing(color);
