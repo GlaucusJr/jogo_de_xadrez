@@ -11,6 +11,8 @@ export class Board {
   board: (Piece | null)[][] = [];
   selectedPiece: Piece | null = null;
   currentTurn: Color = "white";
+  enPassantTarget: { row: number; col: number } | null = null;
+
 
   constructor() {
     this.createEmptyBoard();
@@ -96,6 +98,24 @@ handleSquareClick(row: number, col: number) {
     const originalCol = this.selectedPiece.col;
 
     if (this.selectedPiece.isValidMove(row, col, this.board)) {
+
+      // EN PASSANT
+      if (
+        this.selectedPiece instanceof Pawn &&
+        Math.abs(col - this.selectedPiece.col) === 1 &&
+        !this.board[row][col]
+      ) {
+        const direction = this.selectedPiece.color === "white" ? 1 : -1;
+        const capturedPawn = this.board[row + direction][col];
+        if (
+          capturedPawn instanceof Pawn &&
+          capturedPawn.color !== this.selectedPiece.color &&
+          capturedPawn.hasMovedTwoStepsLastTurn
+        ) {
+          this.board[row + direction][col] = null; // remove peão capturado en passant
+        }
+      }    
+
       // Verifica se é um movimento de roque
       if (
         this.selectedPiece instanceof King &&
@@ -118,6 +138,46 @@ handleSquareClick(row: number, col: number) {
       this.board[originalRow][originalCol] = null;
       this.board[row][col] = this.selectedPiece;
       this.selectedPiece.move(row, col);
+
+            // Resetar flag de en passant dos outros peões
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const piece = this.board[r][c];
+          if (
+            piece instanceof Pawn &&
+            piece !== this.selectedPiece
+          ) {
+            piece.hasMovedTwoStepsLastTurn = false;
+          }
+        }
+      }
+
+      // PROMOÇÃO
+      if (
+        this.selectedPiece instanceof Pawn &&
+        (row === 0 || row === 7)
+      ) {
+        this.board[row][col] = new Queen(this.selectedPiece.color, row, col);
+      }
+
+      if (this.selectedPiece instanceof Pawn && Math.abs(row - this.selectedPiece.row) === 2) {
+        this.enPassantTarget = {
+          row: (row + this.selectedPiece.row) / 2,
+          col: col,
+        };
+      } else {
+        this.enPassantTarget = null;
+      }
+
+      if (
+        this.selectedPiece instanceof Pawn &&
+        this.enPassantTarget &&
+          row === this.enPassantTarget.row &&
+          col === this.enPassantTarget.col
+      ) {
+        const capturedRow = this.selectedPiece.color === "white" ? row + 1 : row - 1;
+        this.board[capturedRow][col] = null;
+      }
 
       const nextTurn = this.currentTurn === "white" ? "black" : "white";
 
