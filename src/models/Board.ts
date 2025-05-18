@@ -13,7 +13,6 @@ export class Board {
   currentTurn: Color = "white";
   enPassantTarget: { row: number; col: number } | null = null;
 
-
   constructor() {
     this.createEmptyBoard();
     this.addPieces();
@@ -90,126 +89,131 @@ export class Board {
     }
   }
 
-handleSquareClick(row: number, col: number) {
-  const clickedPiece = this.board[row][col];
+  handleSquareClick(row: number, col: number) {
+    const clickedPiece = this.board[row][col];
 
-  if (this.selectedPiece) {
-    const originalRow = this.selectedPiece.row;
-    const originalCol = this.selectedPiece.col;
+    if (this.selectedPiece) {
+      const originalRow = this.selectedPiece.row;
+      const originalCol = this.selectedPiece.col;
 
-    if (this.selectedPiece.isValidMove(row, col, this.board)) {
+      if (this.selectedPiece.isValidMove(row, col, this.board)) {
+        const simulatedBoard = this.cloneBoard();
+        const simulatedPiece = simulatedBoard[originalRow][originalCol];
 
-      // EN PASSANT
-      if (
-        this.selectedPiece instanceof Pawn &&
-        Math.abs(col - this.selectedPiece.col) === 1 &&
-        !this.board[row][col]
-      ) {
-        const direction = this.selectedPiece.color === "white" ? 1 : -1;
-        const capturedPawn = this.board[row + direction][col];
-        if (
-          capturedPawn instanceof Pawn &&
-          capturedPawn.color !== this.selectedPiece.color &&
-          capturedPawn.hasMovedTwoStepsLastTurn
-        ) {
-          this.board[row + direction][col] = null; // remove peão capturado en passant
-        }
-      }    
+        if (simulatedPiece) {
+          simulatedBoard[row][col] = simulatedPiece.clone();
+          simulatedBoard[originalRow][originalCol] = null;
 
-      // Verifica se é um movimento de roque
-      if (
-        this.selectedPiece instanceof King &&
-        Math.abs(col - originalCol) === 2 &&
-        row === originalRow
-      ) {
-        const rookCol = col > originalCol ? 7 : 0;
-        const newRookCol = col > originalCol ? col - 1 : col + 1;
-        const rook = this.board[row][rookCol];
-
-        if (rook instanceof Rook && !rook.hasMoved) {
-          // Move a torre
-          this.board[row][rookCol] = null;
-          this.board[row][newRookCol] = rook;
-          rook.move(row, newRookCol);
-        }
-      }
-
-      // Executa o movimento da peça selecionada
-      this.board[originalRow][originalCol] = null;
-      this.board[row][col] = this.selectedPiece;
-      this.selectedPiece.move(row, col);
-
-            // Resetar flag de en passant dos outros peões
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          const piece = this.board[r][c];
-          if (
-            piece instanceof Pawn &&
-            piece !== this.selectedPiece
-          ) {
-            piece.hasMovedTwoStepsLastTurn = false;
+          if (this.simulateCheck(simulatedBoard, this.currentTurn)) {
+            alert("Você deve sair do xeque!");
+            return;
           }
         }
-      }
 
-      // PROMOÇÃO
-      if (
-        this.selectedPiece instanceof Pawn &&
-        (row === 0 || row === 7)
-      ) {
-        this.board[row][col] = new Queen(this.selectedPiece.color, row, col);
-      }
-
-      if (this.selectedPiece instanceof Pawn && Math.abs(row - this.selectedPiece.row) === 2) {
-        this.enPassantTarget = {
-          row: (row + this.selectedPiece.row) / 2,
-          col: col,
-        };
-      } else {
-        this.enPassantTarget = null;
-      }
-
-      if (
-        this.selectedPiece instanceof Pawn &&
-        this.enPassantTarget &&
-          row === this.enPassantTarget.row &&
-          col === this.enPassantTarget.col
-      ) {
-        const capturedRow = this.selectedPiece.color === "white" ? row + 1 : row - 1;
-        this.board[capturedRow][col] = null;
-      }
-
-      const nextTurn = this.currentTurn === "white" ? "black" : "white";
-
-      if (this.isInCheck(nextTurn)) {
-        if (this.isCheckmate(nextTurn)) {
-          setTimeout(() => {
-            alert(`Xeque-mate! ${this.currentTurn === "white" ? "Brancas" : "Pretas"} venceram!`);
-            if (confirm("Deseja jogar novamente?")) {
-              location.reload();
-            }
-          }, 50);
-        } else {
-          setTimeout(() => {
-            alert("Xeque!");
-          }, 10);
+        // EN PASSANT
+        if (
+          this.selectedPiece instanceof Pawn &&
+          Math.abs(col - this.selectedPiece.col) === 1 &&
+          !this.board[row][col]
+        ) {
+          const direction = this.selectedPiece.color === "white" ? 1 : -1;
+          const capturedPawn = this.board[row + direction][col];
+          if (
+            capturedPawn instanceof Pawn &&
+            capturedPawn.color !== this.selectedPiece.color &&
+            capturedPawn.hasMovedTwoStepsLastTurn
+          ) {
+            this.board[row + direction][col] = null;
+          }
         }
-      }
 
-      this.currentTurn = nextTurn;
-      this.selectedPiece = null;
-      this.render(document.getElementById("board")!);
-    } else {
-      this.selectedPiece = null;
+        // ROQUE
+        if (
+          this.selectedPiece instanceof King &&
+          Math.abs(col - originalCol) === 2 &&
+          row === originalRow
+        ) {
+          const rookCol = col > originalCol ? 7 : 0;
+          const newRookCol = col > originalCol ? col - 1 : col + 1;
+          const rook = this.board[row][rookCol];
+
+          if (rook instanceof Rook && !rook.hasMoved) {
+            this.board[row][rookCol] = null;
+            this.board[row][newRookCol] = rook;
+            rook.move(row, newRookCol);
+          }
+        }
+
+        // MOVER PEÇA
+        this.board[originalRow][originalCol] = null;
+        this.board[row][col] = this.selectedPiece;
+
+        const pawnMovedTwoSteps = (
+          this.selectedPiece instanceof Pawn &&
+          Math.abs(row - originalRow) === 2
+        );
+
+        this.selectedPiece.move(row, col);
+
+        // RESET en passant de outros peões
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const piece = this.board[r][c];
+            if (piece instanceof Pawn && piece !== this.selectedPiece) {
+              piece.hasMovedTwoStepsLastTurn = false;
+            }
+          }
+        }
+
+        // PROMOÇÃO
+        if (
+          this.selectedPiece instanceof Pawn &&
+          (row === 0 || row === 7)
+        ) {
+          this.board[row][col] = new Queen(this.selectedPiece.color, row, col);
+        }
+
+        // Atualizar alvo de en passant
+        if (pawnMovedTwoSteps) {
+          this.enPassantTarget = {
+            row: (originalRow + row) / 2,
+            col: col,
+          };
+          (this.board[row][col] as Pawn).hasMovedTwoStepsLastTurn = true;
+        } else {
+          this.enPassantTarget = null;
+        }
+
+        // VERIFICAR XEQUE E XEQUE-MATE
+        const nextTurn = this.currentTurn === "white" ? "black" : "white";
+
+        if (this.isInCheck(nextTurn)) {
+          if (this.isCheckmate(nextTurn)) {
+            setTimeout(() => {
+              const vencedor = this.currentTurn === "white" ? "Brancas" : "Pretas";
+              if (confirm(`Xeque-mate! ${vencedor} venceram!\nDeseja jogar novamente?`)) {
+                location.reload();
+              }
+            }, 100);
+          } else {
+            setTimeout(() => alert("Xeque!"), 10);
+          }
+        }
+
+        this.currentTurn = nextTurn;
+        this.selectedPiece = null;
+        this.render(document.getElementById("board")!);
+      } else {
+        this.selectedPiece = null;
+        this.render(document.getElementById("board")!);
+      }
+    } else if (clickedPiece && clickedPiece.color === this.currentTurn) {
+      this.selectedPiece = clickedPiece;
       this.render(document.getElementById("board")!);
     }
-  } else if (clickedPiece && clickedPiece.color === this.currentTurn) {
-    this.selectedPiece = clickedPiece;
-    this.render(document.getElementById("board")!);
   }
-}
 
-    isInCheck(color: Color): boolean {
+  isInCheck(color: Color): boolean {
     const king = this.findKing(color);
     if (!king) return false;
 
@@ -239,17 +243,16 @@ handleSquareClick(row: number, col: number) {
               if (piece.isValidMove(r, c, this.board)) {
                 const simulatedBoard = this.cloneBoard();
                 const simulatedPiece = simulatedBoard[row][col];
+                if (!simulatedPiece) continue;
 
-                if (!simulatedPiece) continue; // Proteção contra null
-
-                // Simula o movimento
-                simulatedBoard[r][c] = simulatedPiece;
+                const simulatedClone = simulatedPiece.clone();
+                simulatedClone.row = r;
+                simulatedClone.col = c;
+                simulatedBoard[r][c] = simulatedClone;
                 simulatedBoard[row][col] = null;
-                simulatedPiece.move(r, c);
 
-                // Verifica se ainda está em xeque
                 if (!this.simulateCheck(simulatedBoard, color)) {
-                  return false; // Existe uma jogada para sair do xeque
+                  return false;
                 }
               }
             }
@@ -258,8 +261,8 @@ handleSquareClick(row: number, col: number) {
       }
     }
 
-  return true; // Nenhuma jogada válida encontrada => xeque-mate
-}
+    return true;
+  }
 
   cloneBoard(): (Piece | null)[][] {
     return this.board.map(row => row.map(piece => piece ? piece.clone() : null));
@@ -276,8 +279,13 @@ handleSquareClick(row: number, col: number) {
       for (let col = 0; col < 8; col++) {
         const piece = simulatedBoard[row][col];
         if (piece && piece.color !== color) {
-          if (piece.isValidMove(king.row, king.col, simulatedBoard)) {
-            return true;
+          try {
+            if (piece.isValidMove(king.row, king.col, simulatedBoard)) {
+              return true;
+            }
+          } catch (_) {
+            // Algumas peças podem lançar erro se o movimento não for válido
+            continue;
           }
         }
       }
@@ -285,6 +293,7 @@ handleSquareClick(row: number, col: number) {
 
     return false;
   }
+
 
   findKing(color: Color): King | null {
     for (let row = 0; row < 8; row++) {
