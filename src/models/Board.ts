@@ -121,7 +121,19 @@ handleSquareClick(row: number, col: number) {
         const nextTurn = this.currentTurn === "white" ? "black" : "white";
         if (this.isInCheck(nextTurn)) {
           if (this.isCheckmate(nextTurn)) {
-            alert(`Xeque-mate! ${nextTurn === "white" ? "Pretas" : "Brancas"} venceram!`);
+            const vencedor = this.currentTurn === "white" ? "Brancas" : "Pretas";
+            const jogarNovamente = confirm(`Xeque-mate! ${vencedor} venceram!\nDeseja jogar novamente?`);
+            if (jogarNovamente) {
+              // Reinicia o jogo
+              const novoTabuleiro = new Board();
+              novoTabuleiro.render(document.getElementById("board")!);
+              // Substitui o tabuleiro atual pelo novo
+              Object.assign(this, novoTabuleiro);
+              return;
+            } else {
+              alert("Obrigado por jogar!");
+              return;
+            }
           } else {
             alert("Xeque!");
           }
@@ -143,7 +155,7 @@ handleSquareClick(row: number, col: number) {
 }
 
 
-  isInCheck(color: Color): boolean {
+    isInCheck(color: Color): boolean {
     const king = this.findKing(color);
     if (!king) return false;
 
